@@ -1,0 +1,111 @@
+/* Estilos gerais */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #121212;
+    color: #fff;
+    text-align: center;
+    padding: 20px;
+}
+
+h1, h2 {
+    color: #00ffcc;
+}
+
+/* Formulário */
+form {
+    background: #1e1e1e;
+    padding: 20px;
+    border-radius: 10px;
+    width: 50%;
+    margin: 20px auto;
+    box-shadow: 0px 0px 10px rgba(0, 255, 204, 0.5);
+}
+
+label {
+    display: block;
+    margin-top: 10px;
+    font-size: 16px;
+}
+
+input, select, button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 5px;
+    border: none;
+}
+
+input, select {
+    background: #333;
+    color: #fff;
+    padding: 10px 0;
+}
+
+button {
+    background: #00ffcc;
+    color: #121212;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: #00cca3;
+}
+
+/* Tabelas */
+table {
+    width: 90%;
+    margin: 20px auto;
+    border-collapse: collapse;
+    background: #1e1e1e;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0px 0px 10px rgba(0, 255, 204, 0.5);
+}
+
+th, td {
+    padding: 12px;
+    border: 1px solid #00ffcc;
+    text-align: center;
+}
+
+th {
+    background: #00ffcc;
+    color: #121212;
+    font-weight: bold;
+}
+
+td {
+    color: #fff;
+}
+
+/* Status das vagas */
+.disponivel {
+    color: #00ffcc;
+    font-weight: bold;
+}
+
+.ocupado {
+    color: #ff4444;
+    font-weight: bold;
+}
+
+.lotado {
+    color: white;
+    background-color: rgb(255, 204, 0);
+    font-weight: bold;
+    padding: 10px;
+    text-align: center;
+    display: none;
+}
+
+/* Botão de encerrar */
+.encerrar-btn {
+    background: #ff4444;
+    color: white;
+}
+
+.encerrar-btn:hover {
+    background: #cc0000;
+}

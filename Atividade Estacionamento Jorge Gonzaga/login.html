@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Wallpark</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="login-container">
+        <h2>Login</h2>
+        <form id="loginForm">
+            <label for="username">Usuário:</label>
+            <input type="text" id="username" required>
+            <label for="password">Senha:</label>
+            <input type="password" id="password" required>
+            <button type="submit">Entrar</button>
+        </form>
+        <p id="error-message" class="error"></p>
+    </div>
+    <script>
+        document.getElementById("loginForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            let user = document.getElementById("username").value;
+            let pass = document.getElementById("password").value;
+            if (user === "admin" && pass === "1234") {
+                window.location.href = "cadastro.html";
+            } else {
+                document.getElementById("error-message").innerText = "Usuário ou senha incorretos";
+            }
+        });
+    </script>
+</body>
+</html>

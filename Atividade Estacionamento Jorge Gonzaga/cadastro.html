@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Veículos - Wallpark</title>
+    <link rel="stylesheet" href="styles.css">
+   
+</head>
+<body>
+    <h1>Cadastro de Veículos - Estacionamento Wallpark</h1>
+    
+    <div id="avisoLotado" class="lotado">🚨 ESTACIONAMENTO LOTADO! 🚨</div>
+
+    <form id="cadastroVeiculo">
+        <label for="cor">Cor:</label>
+        <input type="text" id="cor" required>
+        
+        <label for="modelo">Modelo:</label>
+        <input type="text" id="modelo" required>
+        
+        <label for="placa">Placa:</label>
+        <input type="text" id="placa" required>
+        
+        <label for="tamanho">Tamanho do Veículo:</label>
+        <select id="tamanho">
+            <option value="pequeno">Pequeno</option>
+            <option value="medio">Médio</option>
+            <option value="grande">Grande</option>
+        </select>
+
+        <label for="vaga">Escolha a Vaga:</label>
+        <select id="vaga"></select>
+        
+        <button type="submit">Cadastrar</button>
+    </form>
+    
+    <h2>Status das Vagas - Setor A1</h2>
+    <table id="tabelaVagas">
+        <tr>
+            <th>Vaga</th>
+            <th>Status</th>
+        </tr>
+    </table>
+    
+    <h2>Dados dos Veículos Cadastrados</h2>
+    <table id="tabelaVeiculos">
+        <tr>
+            <th>Cor</th>
+            <th>Modelo</th>
+            <th>Placa</th>
+            <th>Tamanho</th>
+            <th>Entrada</th>
+            <th>Vaga</th>
+            <th>Tempo de Permanência</th>
+            <th>Valor</th>
+            <th>Status Pagamento</th>
+            <th>Ações</th>
+        </tr>
+    </table>
+
+    <button onclick="imprimirTicket()">Imprimir Ticket</button>
+
+    <script>
+        let vagas = [true, true, true, true, true]; 
+        const precos = { pequeno: 5, medio: 10, grande: 15 }; 
+
+        function atualizarSelectVagas() {
+            const select = document.getElementById("vaga");
+            select.innerHTML = "";
+            let vagasDisponiveis = 0;
+
+            vagas.forEach((disponivel, index) => {
+                if (disponivel) {
+                    const option = document.createElement("option");
+                    option.value = index;
+                    option.textContent = `Vaga ${index + 1}`;
+                    select.appendChild(option);
+                    vagasDisponiveis++;
+                }
+            });
+
+            document.getElementById("avisoLotado").style.display = vagasDisponiveis === 0 ? "block" : "none";
+        }
+
+        function atualizarVagas() {
+            const tabelaVagas = document.getElementById("tabelaVagas");
+            tabelaVagas.innerHTML = `<tr><th>Vaga</th><th>Status</th></tr>`;
+            vagas.forEach((status, index) => {
+                let tr = document.createElement("tr");
+                tr.innerHTML = `<td>${index + 1}</td><td class="${status ? 'disponivel' : 'ocupado'}">${status ? "Disponível" : "Ocupado"}</td>`;
+                tabelaVagas.appendChild(tr);
+            });
+
+            atualizarSelectVagas();
+        }
+
+        document.getElementById("cadastroVeiculo").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            const cor = document.getElementById("cor").value;
+            const modelo = document.getElementById("modelo").value;
+            const placa = document.getElementById("placa").value;
+            const tamanho = document.getElementById("tamanho").value;
+            const vagaIndex = document.getElementById("vaga").value;
+            const entrada = new Date();
+
+            if (vagaIndex === "") {
+                alert("Estacionamento Lotado! Nenhuma vaga disponível.");
+                return;
+            }
+
+            vagas[vagaIndex] = false;
+            atualizarVagas();
+
+            const row = document.createElement("tr");
+            row.dataset.entrada = entrada.getTime();
+            row.dataset.tamanho = tamanho;
+            row.dataset.vaga = vagaIndex;
+            row.innerHTML = `
+                <td>${cor}</td>
+                <td>${modelo}</td>
+                <td>${placa}</td>
+                <td>${tamanho}</td>
+                <td>${entrada.toLocaleString()}</td>
+                <td>Vaga ${parseInt(vagaIndex) + 1}</td>
+                <td class="tempo"></td>
+                <td class="valor"></td>
+                <td class="status-pagamento">Pendente</td>
+                <td><button onclick="encerrarCheckin(this)">Encerrar</button></td>
+            `;
+            document.getElementById("tabelaVeiculos").appendChild(row);
+
+            salvarBackup();
+        });
+
+        function encerrarCheckin(button) {
+            const row = button.parentElement.parentElement;
+            const entrada = new Date(parseInt(row.dataset.entrada));
+            const saida = new Date();
+            const diffMs = saida - entrada;
+            const diffHoras = Math.ceil(diffMs / (1000 * 60 * 60));
+            const tamanho = row.dataset.tamanho;
+            const valor = diffHoras * precos[tamanho];
+
+            const formaPagamento = prompt("Escolha a forma de pagamento (Dinheiro, Cartão, Pix):");
+            if (!formaPagamento) return;
+
+            row.querySelector(".tempo").textContent = `${diffHoras}h`;
+            row.querySelector(".valor").textContent = `R$ ${valor},00 (${formaPagamento})`;
+            row.querySelector(".status-pagamento").textContent = "Pago ✅";
+
+            vagas[row.dataset.vaga] = true;
+            atualizarVagas();
+            salvarBackup();
+        }
+
+        function imprimirTicket() {
+            const tabela = document.getElementById("tabelaVeiculos");
+            let ultimaLinha = tabela.rows[tabela.rows.length - 1];
+            if (ultimaLinha) {
+                let codigoVerificacao = Math.random().toString(36).substr(2, 6).toUpperCase();
+                let dados = `
+                    Código de Verificação: ${codigoVerificacao}
+                    Placa: ${ultimaLinha.cells[2].textContent}
+                    Entrada: ${ultimaLinha.cells[4].textContent}
+                    Vaga: ${ultimaLinha.cells[5].textContent}
+                `;
+                alert("TICKET IMPRESSO:\n" + dados);
+            } else {
+                alert("Nenhum veículo cadastrado.");
+            }
+        }
+
+        function salvarBackup() {
+            localStorage.setItem("backupEstacionamento", JSON.stringify(vagas));
+        }
+
+        function carregarBackup() {
+            let dados = JSON.parse(localStorage.getItem("backupEstacionamento"));
+            if (dados) vagas = dados;
+            atualizarVagas();
+        }
+
+        carregarBackup();
+        atualizarVagas();
+    </script>
+</body>
+</html>
